@@ -1,0 +1,17 @@
+server:
+  port: ${TICKET_PORT:8083}
+spring:
+  application:
+    name: ticket-service
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.MariaDBDialect}
+  jackson:
+    deserialization:
+      fail-on-numbers-for-enums: true
+      accept-float-as-int: false
+servicios:
+  usuario-url: ${USUARIO_SERVICE_URL:http://localhost:8081}
+  tecnico-url: ${TECNICO_SERVICE_URL:http://localhost:8082}

@@ -1,0 +1,10 @@
+server:
+  port: ${TECNICO_PORT:8082}
+spring:
+  application:
+    name: tecnico-service
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.MariaDBDialect}

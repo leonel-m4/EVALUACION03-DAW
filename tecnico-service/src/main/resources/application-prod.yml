@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${TECNICO_DB_URL}
+    username: ${TECNICO_DB_USER}
+    password: ${TECNICO_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false

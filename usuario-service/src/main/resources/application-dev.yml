@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: ${USUARIO_DB_URL:jdbc:mysql://localhost:3306/bd_usuario?serverTimezone=UTC}
+    username: ${USUARIO_DB_USER:soporte_usuario}
+    # Clave ficticia de desarrollo: coincide con sql/02-usuarios-desarrollo.sql.
+    password: ${USUARIO_DB_PASSWORD:usuario_local_2026}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

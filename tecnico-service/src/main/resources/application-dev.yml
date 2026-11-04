@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${TECNICO_DB_URL:jdbc:mysql://localhost:3306/bd_tecnico?serverTimezone=UTC}
+    username: ${TECNICO_DB_USER:soporte_tecnico}
+    password: ${TECNICO_DB_PASSWORD:tecnico_local_2026}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

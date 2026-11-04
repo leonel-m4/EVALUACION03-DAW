@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${TICKET_DB_URL}
+    username: ${TICKET_DB_USER}
+    password: ${TICKET_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false

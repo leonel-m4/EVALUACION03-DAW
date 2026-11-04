@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${TICKET_DB_URL:jdbc:mysql://localhost:3306/bd_ticket?serverTimezone=UTC}
+    username: ${TICKET_DB_USER:soporte_ticket}
+    password: ${TICKET_DB_PASSWORD:ticket_local_2026}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

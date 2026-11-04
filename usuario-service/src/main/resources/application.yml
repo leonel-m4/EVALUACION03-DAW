@@ -1,0 +1,10 @@
+server:
+  port: ${USUARIO_PORT:8081}
+spring:
+  application:
+    name: usuario-service
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    database-platform: ${DB_DIALECT:org.hibernate.dialect.MariaDBDialect}

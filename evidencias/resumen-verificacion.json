@@ -1,0 +1,26 @@
+{
+  "fecha": "2026-11-04",
+  "laboratorio": "17 - Sistema de soporte técnico",
+  "motorReal": "MariaDB 10.4.32 - XAMPP",
+  "puertoBD": 3306,
+  "bases": ["bd_usuario", "bd_tecnico", "bd_ticket"],
+  "baseAuxiliar": false,
+  "javaObjetivo": 17,
+  "springBoot": "3.5.15",
+  "unitarias": {"resultado": "BUILD SUCCESS", "pruebas": 39, "fallos": 0, "errores": 0, "omitidas": 0, "conexionBD": false},
+  "postmanReal": {
+    "newman": "6.2.1",
+    "fechaUtc": "2026-11-04T06:50:38.998746+00:00",
+    "solicitudes": 41,
+    "aserciones": 73,
+    "fallos": 0,
+    "reporte": "ejecucion-real-20261104-015026-434876/newman.json"
+  },
+  "persistenciaTrasReiniciarMicroservicios": true,
+  "perfilesComprobados": ["prod", "dev"],
+  "servicioCaidoComprobadoHTTP": 503,
+  "ticketDemostracionId": 2,
+  "estadoDemostracion": "EN_PROCESO",
+  "serviciosDejadosActivos": [8081, 8082, 8083],
+  "evidenciaPersistencia": "flujo-real.json"
+}

@@ -1,0 +1,17 @@
+**/target/
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.zip
+*.local.ps1
+__pycache__/
+evidencias/ejecucion-*/
+evidencias/servicios/
