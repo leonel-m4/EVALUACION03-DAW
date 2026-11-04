@@ -19,7 +19,7 @@ cd soporte-tecnico
 - Maven **3.6.3 o superior**, o el Maven Wrapper incluido en cada servicio.
 - **XAMPP con MariaDB 10.4+** (verificado con tu MariaDB **10.4.32**) o MySQL 8.0.16+,
   ejecutándose localmente en el puerto 3306. SQLyog/Workbench son clientes del servidor.
-- Postman para ejecutar la colección.
+- Postman para probar los endpoints.
 - Internet en la primera compilación para descargar dependencias.
 
 Spring Boot **3.5.15**. Los proyectos base se generaron con Spring Initializr y
@@ -56,7 +56,7 @@ src/main/resources/
 src/test/java/    # Pruebas unitarias sin base de datos
 ```
 
-Diagrama: [docs/diagrama.md](docs/diagrama.md) y [versión visual SVG](docs/diagrama.svg).
+El diagrama está incluido en el documento de la evaluación.
 
 ## 3. Preparar MariaDB/MySQL local con XAMPP y SQLyog
 
@@ -82,8 +82,7 @@ Si ya existe una cuenta con otra clave, configura la clave correcta mediante var
 de entorno, no la publiques. No hace falta utilizar `root` desde los microservicios.
 
 Para ver los registros desde SQLyog, abre `sql/03-consultas-sqlyog.sql` y ejecútalo
-en tu conexión local. En `evidencias/flujo-real.json` hay un registro histórico
-de una ejecución anterior; vuelve a ejecutar Postman para verificar esta versión.
+en tu conexión local. Usa Postman para verificar esta versión.
 
 ## 4. Compilar y ejecutar
 
@@ -121,26 +120,6 @@ java -jar .\ticket-service\target\ticket-service-0.0.1-SNAPSHOT.jar
 
 El perfil predeterminado es `dev`. Espera a ver `Started ...Application` en cada terminal.
 Para detener una aplicación usa `Ctrl+C` en su terminal.
-
-### Inicio y parada con scripts de Windows
-
-Alternativa a las tres terminales, desde la carpeta principal:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\iniciar.ps1
-```
-
-El script inicia los tres JAR en segundo plano, deja sus logs en `evidencias/servicios/`
-y guarda sus PID. No inicia ni detiene XAMPP y no cambia permanentemente la política
-de PowerShell. Rechaza puertos ocupados en lugar de cerrar otras aplicaciones.
-
-Para detener únicamente los procesos registrados de este proyecto:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\detener.ps1
-```
-
-No ejecutes el inicio por segunda vez mientras ya estén encendidos.
 
 También puedes ejecutar la clase principal de cada proyecto desde IntelliJ.
 Sin Maven instalado, entra en cada servicio y ejecuta ` .\mvnw.cmd verify `;
@@ -269,35 +248,15 @@ Todas las respuestas de error controladas tienen este formato:
 
 No se devuelven trazas ni credenciales en los mensajes de error.
 
-## 7. Postman, pruebas y evidencias
+## 7. Pruebas en Postman
 
-1. Importa `postman/SoporteTecnico.postman_collection.json` en Postman.
-2. Confirma las variables de colección `usuarioBaseUrl`, `tecnicoBaseUrl`, `ticketBaseUrl`.
-3. Con MySQL y los tres servicios encendidos, ejecuta las carpetas **01, 02 y 03 en orden**,
-   usando Collection Runner, una iteración. Los IDs se capturan automáticamente.
-4. Revisa los tests y toma capturas de crear ticket, cambiar estado, consultar por ID,
-   datos inválidos e ID inexistente. No es necesario capturar contraseñas.
-5. La carpeta **04 - Limpieza** elimina únicamente los IDs creados por esa ejecución.
-   Ejecútala al terminar; si corres toda la colección, también se ejecuta la limpieza.
+Con MySQL y los tres servicios encendidos, sigue el flujo de la sección 6:
+
+1. Registra un usuario y un técnico; usa los IDs devueltos al crear un ticket.
+2. Cambia el estado con `PATCH /api/tickets/{id}/estado` y compruébalo con GET.
+3. Envía un ticket sin `asunto` para comprobar la respuesta 400.
+4. Consulta un ID inexistente para comprobar la respuesta 404.
 
 `mvn verify` prueba controladores, validaciones y reglas de negocio con repositorios
-simulados (Mockito), sin base auxiliar.
-La **persistencia JPA real se comprueba con la colección Postman contra XAMPP**.
-
-Opcional: con los tres servicios y XAMPP ya iniciados, Python 3, Node.js y `npx`:
-
-```powershell
-python scripts/verificar-postman-real.py
-```
-
-Ejecuta esa misma colección con Newman contra `8081/8082/8083`, descarga Newman
-bajo demanda sin instalarlo globalmente y genera reportes en `evidencias/ejecucion-real-*`.
-No crea otro servidor, no usa una base temporal y no detiene tus servicios.
-La carpeta 04 limpia solo los registros creados por la ejecución de la colección;
-no elimina bases ni registros previos. No intercalar ejecuciones concurrentes de
-la misma colección porque sus variables compartidas contienen los IDs de limpieza.
-
-El [registro histórico de verificación](docs/verificacion.md) corresponde a una
-versión anterior; para comprobar la versión actual, ejecuta la colección otra vez.
-Conclusiones y preparación: [docs/conclusiones.md](docs/conclusiones.md),
-[docs/sustentacion.md](docs/sustentacion.md).
+simulados (Mockito), sin base auxiliar. Las capturas de Postman y las conclusiones
+están en el documento de la evaluación.

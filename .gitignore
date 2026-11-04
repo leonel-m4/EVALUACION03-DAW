@@ -1,5 +1,6 @@
 **/target/
 .idea/
+.run/
 .vscode/
 *.iml
 *.log
@@ -13,5 +14,7 @@
 *.zip
 *.local.ps1
 __pycache__/
-evidencias/ejecucion-*/
-evidencias/servicios/
+docs/
+evidencias/
+postman/
+scripts/
