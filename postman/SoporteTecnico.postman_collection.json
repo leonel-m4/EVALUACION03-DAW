@@ -77,13 +77,6 @@
         {"name": "200 - Buscar ticket por ID", "request": {"method": "GET", "url": "{{ticketBaseUrl}}/api/tickets/{{ticketId}}"}},
         {"name": "200 - Actualizar ticket completo", "request": {"method": "PUT", "url": "{{ticketBaseUrl}}/api/tickets/{{ticketId}}", "body": {"mode": "raw", "raw": "{\"idUsuario\":{{usuarioId}},\"idTecnico\":{{tecnicoId}},\"asunto\":\"Sin conexión de red\",\"descripcion\":\"Se revisará el adaptador de red\",\"prioridad\":\"ALTA\",\"estado\":\"ABIERTO\"}"}}},
         {"name": "200 - Cambiar estado a EN_PROCESO", "request": {"method": "PATCH", "url": "{{ticketBaseUrl}}/api/tickets/{{ticketId}}/estado", "body": {"mode": "raw", "raw": "{\"estado\":\"EN_PROCESO\"}"}}},
-        {
-          "name": "200 - Filtrar tickets EN_PROCESO",
-          "request": {"method": "GET", "url": "{{ticketBaseUrl}}/api/tickets?estado=EN_PROCESO"},
-          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
-            "pm.test('Filtro y persistencia del estado', function () { const lista = pm.response.json(); pm.expect(lista.some(function (t) { return String(t.id) === pm.collectionVariables.get('ticketId'); })).to.eql(true); lista.forEach(function (t) { pm.expect(t.estado).to.eql('EN_PROCESO'); }); });"
-          ]}}]
-        },
         {"name": "200 - Cambiar estado a CERRADO", "request": {"method": "PATCH", "url": "{{ticketBaseUrl}}/api/tickets/{{ticketId}}/estado", "body": {"mode": "raw", "raw": "{\"estado\":\"CERRADO\"}"}}},
         {
           "name": "200 - Comprobar que CERRADO quedó guardado",
@@ -100,9 +93,6 @@
         {"name": "400 - JSON malformado", "request": {"method": "POST", "url": "{{ticketBaseUrl}}/api/tickets", "body": {"mode": "raw", "raw": "{"}}},
         {"name": "404 - Ticket inexistente", "request": {"method": "GET", "url": "{{ticketBaseUrl}}/api/tickets/{{missingId}}"}},
         {"name": "404 - Cambiar estado de ticket inexistente", "request": {"method": "PATCH", "url": "{{ticketBaseUrl}}/api/tickets/{{missingId}}/estado", "body": {"mode": "raw", "raw": "{\"estado\":\"CERRADO\"}"}}},
-        {"name": "422 - Usuario referenciado inexistente", "request": {"method": "POST", "url": "{{ticketBaseUrl}}/api/tickets", "body": {"mode": "raw", "raw": "{\"idUsuario\":{{missingId}},\"idTecnico\":{{tecnicoId}},\"asunto\":\"Prueba\",\"descripcion\":\"No debe guardarse\",\"prioridad\":\"BAJA\",\"estado\":\"ABIERTO\"}"}}},
-        {"name": "422 - Técnico referenciado inexistente", "request": {"method": "POST", "url": "{{ticketBaseUrl}}/api/tickets", "body": {"mode": "raw", "raw": "{\"idUsuario\":{{usuarioId}},\"idTecnico\":{{missingId}},\"asunto\":\"Prueba\",\"descripcion\":\"No debe guardarse\",\"prioridad\":\"BAJA\",\"estado\":\"ABIERTO\"}"}}},
-        {"name": "400 - Filtro de estado inválido", "request": {"method": "GET", "url": "{{ticketBaseUrl}}/api/tickets?estado=RESUELTO"}},
         {"name": "404 - Actualizar ticket inexistente", "request": {"method": "PUT", "url": "{{ticketBaseUrl}}/api/tickets/{{missingId}}", "body": {"mode": "raw", "raw": "{\"idUsuario\":{{usuarioId}},\"idTecnico\":{{tecnicoId}},\"asunto\":\"Prueba\",\"descripcion\":\"Detalle\",\"prioridad\":\"BAJA\",\"estado\":\"ABIERTO\"}"}}}
       ]
     },

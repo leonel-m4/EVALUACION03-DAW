@@ -3,8 +3,8 @@
 **Estudiante:** Retamozo De La Cruz Leonel Mathias. Completar la sección antes de entregar.
 
 Tres microservicios Spring Boot con MariaDB/MySQL local, REST, JPA, DTO y validaciones.
-Sin Docker, Eureka, OpenFeign ni bases de datos auxiliares. El ZIP del profesor se usa como referencia de
-paquetes y capas, no como un tema diferente al asignado en el Word.
+Sin Docker, Eureka, OpenFeign ni bases de datos auxiliares. La guía de la semana 11
+se usa como referencia de paquetes y capas; el tema corresponde a la Evaluación 03.
 
 Repositorio: https://github.com/leonel-m4/EVALUACION03-DAW
 
@@ -22,9 +22,9 @@ cd soporte-tecnico
 - Postman para ejecutar la colección.
 - Internet en la primera compilación para descargar dependencias.
 
-Spring Boot **3.5.15**, de la misma rama 3.5 que el ejemplo del profesor.
-Los proyectos base se generaron con Spring Initializr y luego se adaptaron
-a Java 17, Spring Boot 3.5 y los requisitos del laboratorio.
+Spring Boot **3.5.15**. Los proyectos base se generaron con Spring Initializr y
+se adaptaron a Java 17 y los requisitos de la Evaluación 03; la guía de la semana
+11 usa otras versiones, pero no exige copiarlas en este trabajo.
 
 ## 2. Arquitectura
 
@@ -81,11 +81,9 @@ Los scripts usan `IF NOT EXISTS`: no borran datos ni cambian contraseñas existe
 Si ya existe una cuenta con otra clave, configura la clave correcta mediante variables
 de entorno, no la publiques. No hace falta utilizar `root` desde los microservicios.
 
-**En este equipo ya se ejecutaron los scripts y se verificó el funcionamiento con XAMPP.**
 Para ver los registros desde SQLyog, abre `sql/03-consultas-sqlyog.sql` y ejecútalo
-en tu conexión local. Se dejó un usuario, un técnico y el **ticket ID 2**, en estado
-`EN_PROCESO`, como datos de demostración persistentes. Los detalles de esa ejecución
-están en `evidencias/flujo-real.json`. No se modificaron otras bases de tu servidor.
+en tu conexión local. En `evidencias/flujo-real.json` hay un registro histórico
+de una ejecución anterior; vuelve a ejecutar Postman para verificar esta versión.
 
 ## 4. Compilar y ejecutar
 
@@ -95,8 +93,15 @@ Abre PowerShell en la carpeta `soporte-tecnico`:
 mvn clean verify
 ```
 
-Este comando ejecuta pruebas unitarias **sin conectarse a ninguna base de datos**
-y genera los tres JAR. No existe dependencia H2 ni se crean bases auxiliares.
+Si Maven no está en `PATH`, desde la carpeta principal usa el Wrapper incluido:
+
+```powershell
+.\ticket-service\mvnw.cmd -f .\pom.xml clean verify
+```
+
+En ambos casos, asegúrate de que `JAVA_HOME` apunte a un JDK 17 o superior.
+Estos comandos ejecutan pruebas unitarias **sin conectarse a ninguna base de datos**
+y generan los tres JAR. No existe dependencia H2 ni se crean bases auxiliares.
 Después abre **tres terminales**, siempre desde esta carpeta:
 
 ```powershell
@@ -161,7 +166,6 @@ Variables admitidas (no se carga un archivo `.env` automáticamente):
 | Usuario | `USUARIO_DB_URL`, `USUARIO_DB_USER`, `USUARIO_DB_PASSWORD`, `USUARIO_PORT` |
 | Técnico | `TECNICO_DB_URL`, `TECNICO_DB_USER`, `TECNICO_DB_PASSWORD`, `TECNICO_PORT` |
 | Ticket | `TICKET_DB_URL`, `TICKET_DB_USER`, `TICKET_DB_PASSWORD`, `TICKET_PORT` |
-| Referencias de Ticket | `USUARIO_SERVICE_URL`, `TECNICO_SERVICE_URL` |
 | Dialecto JPA | `DB_DIALECT` (predeterminado: `org.hibernate.dialect.MariaDBDialect`) |
 
 Se conserva **MySQL Driver** como pide la guía; se comprobó su conexión con MariaDB
@@ -199,10 +203,7 @@ Cada ruta se consulta en el puerto de su propio servicio:
 | PUT | `/api/usuarios/{id}` | `/api/tecnicos/{id}` | `/api/tickets/{id}` | 200 |
 | DELETE | `/api/usuarios/{id}` | `/api/tecnicos/{id}` | `/api/tickets/{id}` | 204 sin cuerpo |
 
-Adicionales de Ticket:
-
-- `PATCH /api/tickets/{id}/estado`: cambia únicamente el estado.
-- `GET /api/tickets?estado=EN_PROCESO`: filtra por estado con un método de repositorio.
+El endpoint `PATCH /api/tickets/{id}/estado` cambia únicamente el estado del ticket.
 
 Enviar JSON con `Content-Type: application/json`. `PUT` requiere todos los campos
 del DTO; `PATCH` solo necesita `estado`. No enviar el `id`: lo genera la base.
@@ -248,22 +249,17 @@ Repetir con `CERRADO`. Comprobar con GET que el estado se guardó.
 - Estados: `ABIERTO`, `EN_PROCESO`, `CERRADO`. Se escriben exactamente en mayúsculas;
   no se aceptan valores numéricos como sustitutos de las enumeraciones.
 - Se permite cambiar entre esos tres estados; la guía no impone una secuencia ni prohíbe reabrir.
-- Ticket conserva **solo los IDs**, nunca entidades JPA de otra base. Antes de POST/PUT,
-  `ReferenciaService` comprueba su existencia llamando a las API con `RestClient`,
-  incluido en Spring Web: no requiere Feign ni descubrimiento de servicios.
-- Consultar tickets o cambiar su estado no necesita que los otros dos servicios estén disponibles.
-- No hay transacciones distribuidas ni borrado en cascada: borrar un usuario/técnico
-  no borra tickets existentes. Pueden conservar IDs históricos sin referencia vigente.
-  Para esta práctica, elimina primero los tickets si quieres limpiar sus referencias.
-  La comprobación HTTP no garantiza integridad global ante eliminaciones concurrentes.
+- Ticket conserva **solo `idUsuario` e `idTecnico`**, sin relaciones JPA entre bases.
+  Valida que los IDs sean positivos, pero no comprueba por HTTP si esos registros existen.
+  Para demostrar el flujo, crea primero el usuario y el técnico y usa sus IDs reales.
+- No hay borrado en cascada entre servicios: borrar un usuario/técnico no borra
+  los tickets que almacenan sus IDs. Para limpiar, elimina primero los tickets.
 
 | Código | Caso |
 |---:|---|
-| 400 | DTO inválido, ID no positivo, JSON incorrecto, enum/filtro no permitido |
+| 400 | DTO inválido, ID no positivo, JSON incorrecto o enum no permitido |
 | 404 | El recurso solicitado por ID no existe |
 | 409 | Correo duplicado o conflicto de integridad |
-| 422 | Usuario o técnico referenciado por un ticket no existe |
-| 503 | No se puede comprobar la referencia porque el servicio remoto falla/no responde |
 
 Todas las respuestas de error controladas tienen este formato:
 
@@ -283,11 +279,9 @@ No se devuelven trazas ni credenciales en los mensajes de error.
    datos inválidos e ID inexistente. No es necesario capturar contraseñas.
 5. La carpeta **04 - Limpieza** elimina únicamente los IDs creados por esa ejecución.
    Ejecútala al terminar; si corres toda la colección, también se ejecuta la limpieza.
-6. Para demostrar 503, detén Usuario e intenta crear un ticket con IDs positivos;
-   la API responderá que no puede comprobar la referencia. Después reinicia Usuario.
 
 `mvn verify` prueba controladores, validaciones y reglas de negocio con repositorios
-simulados (Mockito), sin base auxiliar. Hay además pruebas HTTP de las referencias.
+simulados (Mockito), sin base auxiliar.
 La **persistencia JPA real se comprueba con la colección Postman contra XAMPP**.
 
 Opcional: con los tres servicios y XAMPP ya iniciados, Python 3, Node.js y `npx`:
@@ -303,6 +297,7 @@ La carpeta 04 limpia solo los registros creados por la ejecución de la colecci�
 no elimina bases ni registros previos. No intercalar ejecuciones concurrentes de
 la misma colección porque sus variables compartidas contienen los IDs de limpieza.
 
-Consulta el alcance real de la verificación en [docs/verificacion.md](docs/verificacion.md).
+El [registro histórico de verificación](docs/verificacion.md) corresponde a una
+versión anterior; para comprobar la versión actual, ejecuta la colección otra vez.
 Conclusiones y preparación: [docs/conclusiones.md](docs/conclusiones.md),
 [docs/sustentacion.md](docs/sustentacion.md).

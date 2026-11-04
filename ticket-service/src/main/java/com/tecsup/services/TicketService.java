@@ -13,24 +13,19 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TicketService {
     private final TicketRepository repository;
-    private final ReferenciaService referencias;
 
-    public TicketService(TicketRepository repository, ReferenciaService referencias) {
+    public TicketService(TicketRepository repository) {
         this.repository = repository;
-        this.referencias = referencias;
     }
 
-    public List<TicketResponse> listar(EstadoTicket estado) {
-        List<Ticket> tickets = estado == null ? repository.findAll(Sort.by("id"))
-                : repository.findByEstado(estado, Sort.by("id"));
-        return tickets.stream().map(this::respuesta).toList();
+    public List<TicketResponse> listar() {
+        return repository.findAll(Sort.by("id")).stream().map(this::respuesta).toList();
     }
 
     public TicketResponse obtener(Long id) { return respuesta(buscar(id)); }
 
     @Transactional
     public TicketResponse registrar(TicketDTO dto) {
-        referencias.validar(dto.idUsuario(), dto.idTecnico());
         Ticket ticket = new Ticket();
         copiar(dto, ticket);
         return respuesta(repository.save(ticket));
@@ -39,7 +34,6 @@ public class TicketService {
     @Transactional
     public TicketResponse actualizar(Long id, TicketDTO dto) {
         Ticket ticket = buscar(id);
-        referencias.validar(dto.idUsuario(), dto.idTecnico());
         copiar(dto, ticket);
         return respuesta(repository.save(ticket));
     }

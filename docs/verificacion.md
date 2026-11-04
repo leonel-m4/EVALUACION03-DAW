@@ -1,4 +1,11 @@
-# Verificación real — XAMPP / MariaDB
+# Registro histórico de verificación — XAMPP / MariaDB
+
+Los resultados de este archivo y de `evidencias/` se obtuvieron **antes** de simplificar
+Ticket: en aquella versión existían un filtro por estado y una comprobación HTTP
+de referencias. Se conservan como historial; **las cifras y los casos 422/503 no
+verifican la versión actual**. Los resultados de compilación de la versión actual
+están en la sección 6; para la entrega, ejecuta la colección Postman actual con
+tus bases locales.
 
 Fecha: **4 de noviembre de 2026**. Entorno: Windows, JDK 21.0.12.1,
 Maven 3.9.16 y **MariaDB 10.4.32 de XAMPP, puerto 3306**.
@@ -18,9 +25,9 @@ Las tres cuentas locales del proyecto solo tienen permisos sobre su propia base.
 Los servicios conectaron mediante MySQL Connector/J y el dialecto MariaDB de JPA.
 No se modificaron otras bases ni cuentas existentes.
 
-**No hay H2, perfil de base temporal ni servidor de base auxiliar en esta versión.**
+No se utilizó H2 ni una base de datos auxiliar.
 
-## 2. Compilación y pruebas unitarias sin base de datos
+## 2. Compilación y pruebas unitarias de la versión anterior
 
 Comando ejecutado: `mvn -B -ntp clean verify`. Resultado: **BUILD SUCCESS**.
 
@@ -40,7 +47,7 @@ Los tres JAR ejecutables se compilaron para Java 17. Los informes unitarios se
 regeneran en `*/target/surefire-reports/` y el log de esta compilación está en
 `evidencias/compilacion-real.log` en el equipo de trabajo.
 
-## 3. Postman / Newman contra las bases reales
+## 3. Postman / Newman de la versión anterior contra las bases reales
 
 Con XAMPP y los tres JAR en ejecución:
 
@@ -80,11 +87,13 @@ Se repitió el reinicio con `dev` y se volvió a comprobar el estado y sus IDs.
 El perfil `prod` se verificó **localmente con las cuentas de desarrollo del laboratorio**,
 no como un despliegue público de producción. El servidor XAMPP no se reinició ni detuvo.
 
-También se detuvo únicamente Usuario y se intentó crear un ticket: la API devolvió
-**503** y no guardó esa operación. Finalmente se restablecieron los tres servicios.
+En la versión anterior se detuvo únicamente Usuario y se intentó crear un ticket:
+la API entonces devolvió **503** y no guardó esa operación. La versión actual
+ya no consulta por HTTP al servicio Usuario. Finalmente se restablecieron los tres servicios.
 
 Evidencia: `evidencias/flujo-real.json`, con respuestas reales e información de los reinicios.
-Estado final: una fila de demostración en cada tabla y tres servicios activos en `dev`.
+Estado al terminar aquella ejecución: una fila de demostración en cada tabla y
+tres servicios activos en `dev`. No asumir que ese es el estado actual de XAMPP.
 
 ## 5. Cómo comprobarlo en SQLyog
 
@@ -97,9 +106,22 @@ SELECT * FROM bd_tecnico.tecnicos;
 SELECT * FROM bd_ticket.tickets;
 ```
 
-API del registro conservado: `http://localhost:8083/api/tickets/2`.
+En aquella ejecución se consultó `http://localhost:8083/api/tickets/2`.
 
 Para la entrega personal falta completar la sección y adaptar las conclusiones a
 tu explicación. Puedes tomar capturas desde SQLyog y Postman sin mostrar claves.
-La colección reproducible ya cubre la alternativa de entrega "colección o capturas";
-no se han fabricado capturas de ninguna aplicación gráfica.
+La colección actual está en `postman/SoporteTecnico.postman_collection.json`;
+importarla y ejecutarla antes de presentar resultados nuevos. No se han fabricado
+capturas de ninguna aplicación gráfica.
+
+## 6. Compilación y pruebas de la versión simplificada
+
+El **4 de noviembre de 2026** se ejecutó el Maven Wrapper del proyecto con JDK
+21.0.13.0.2 y el objetivo `verify` desde la raíz: **BUILD SUCCESS** en los tres
+microservicios (8 pruebas de Usuario, 8 de Técnico y 16 de Ticket; **32 en total**,
+sin fallos). Estas pruebas de controlador usan repositorios simulados; **no prueban
+la conexión a MariaDB ni sustituyen las pruebas de Postman**.
+
+La colección actual se validó como JSON y contiene **37 solicitudes**. Aún hay
+que ejecutarla contra los tres servicios y las bases reales para obtener evidencia
+de esta versión; los resultados Newman anteriores no corresponden a la colección actual.

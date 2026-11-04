@@ -12,6 +12,3 @@ spring:
     deserialization:
       fail-on-numbers-for-enums: true
       accept-float-as-int: false
-servicios:
-  usuario-url: ${USUARIO_SERVICE_URL:http://localhost:8081}
-  tecnico-url: ${TECNICO_SERVICE_URL:http://localhost:8082}

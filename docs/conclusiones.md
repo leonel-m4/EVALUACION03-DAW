@@ -22,14 +22,14 @@ propia explicación antes de la sustentación; no memorizar resultados que no ha
 
 ## Dificultad técnica y solución
 
-**Problema abordado:** comprobar que los IDs de usuario y técnico sean válidos sin
-crear relaciones JPA o claves foráneas entre bases de microservicios.
+**Problema abordado:** representar al usuario y al técnico de cada ticket sin
+compartir tablas ni crear relaciones JPA entre las bases de los microservicios.
 
-**Solución implementada:** Ticket guarda únicamente los IDs. Antes de crear o
-actualizar un ticket, `ReferenciaService` consulta las API de Usuario y Técnico con
-`RestClient`. Una referencia inexistente produce 422 y un servicio no disponible
-produce 503, sin guardar la operación fallida. Los tiempos de espera están limitados.
+**Solución implementada:** Ticket guarda únicamente `idUsuario` e `idTecnico` como
+valores numéricos positivos. Al registrar un ticket se usan los IDs obtenidos al
+crear primero el usuario y el técnico desde Postman; cada servicio persiste solo
+sus propios datos.
 
-**Límite reconocido:** esta validación no es una transacción distribuida: después
-se podría eliminar una referencia. Para el alcance del laboratorio se documenta
-este comportamiento y no se realiza borrado en cascada entre servicios.
+**Límite reconocido:** el servicio Ticket no comprueba la existencia de esos IDs;
+si se borra el usuario o técnico, el ticket conserva el número. El manejo de ID
+inexistente solicitado se aplica a los recursos consultados en cada API (404).

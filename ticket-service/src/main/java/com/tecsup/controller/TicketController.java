@@ -1,7 +1,6 @@
 package com.tecsup.controller;
 
 import com.tecsup.dto.*;
-import com.tecsup.model.EstadoTicket;
 import com.tecsup.services.TicketService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -20,8 +19,8 @@ public class TicketController {
     public TicketController(TicketService service) { this.service = service; }
 
     @GetMapping
-    public List<TicketResponse> listar(@RequestParam(required = false) EstadoTicket estado) {
-        return service.listar(estado);
+    public List<TicketResponse> listar() {
+        return service.listar();
     }
 
     @GetMapping("/{id}")

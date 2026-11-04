@@ -10,12 +10,10 @@ flowchart TD
     U --> DU[(bd_usuario · usuarios)]
     T --> DT[(bd_tecnico · tecnicos)]
     K --> DK[(bd_ticket · tickets)]
-    K -. GET por ID antes de POST/PUT .-> U
-    K -. GET por ID antes de POST/PUT .-> T
 ```
 
 - Cada servicio es dueño de sus tablas y tiene su propia cuenta de MySQL.
 - Las tres bases pueden vivir en la misma instancia local de MySQL: no comparten tablas.
 - Ticket almacena `idUsuario` e `idTecnico` como números. No usa `@ManyToOne` entre servicios.
-- Las líneas discontinuas son consultas HTTP mediante Spring Web, no accesos a otra base.
+- Ticket no consulta las bases ni las API de Usuario/Técnico: los IDs se toman de las respuestas de Postman.
 - No existe un componente de descubrimiento, gateway ni contenedores.
